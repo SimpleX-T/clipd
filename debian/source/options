@@ -1,0 +1,14 @@
+# Exclude build artefacts from the source tarball. vendor/ and
+# .cargo/config.toml are INCLUDED — they're needed for the network-less
+# Launchpad build.
+
+tar-ignore = "target"
+tar-ignore = ".cargo-home"
+tar-ignore = "debian/clipd"
+tar-ignore = "debian/.debhelper"
+tar-ignore = "debian/files"
+tar-ignore = "debian/*.substvars"
+tar-ignore = "debian/*.log"
+tar-ignore = "debian/debhelper-build-stamp"
+tar-ignore = ".git"
+tar-ignore = ".github"

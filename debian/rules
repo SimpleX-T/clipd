@@ -1,0 +1,46 @@
+#!/usr/bin/make -f
+# clipd debian/rules — drives the Launchpad sbuild.
+#
+# We bypass dh-cargo and just run `cargo build` directly. Deps are
+# vendored into ./vendor/ before the source upload (scripts/build-ppa.sh
+# does this), and .cargo/config.toml redirects the registry to that
+# directory so the Launchpad builder (which has no network) succeeds.
+
+export DEB_BUILD_MAINT_OPTIONS = hardening=+all
+
+# rustc handles its own debug-info splitting; dh_strip on a release-
+# profile Rust binary tends to corrupt the build-id and produce useless
+# detached debug. Cargo.toml's [profile.release] already does strip="symbols".
+export DEB_BUILD_OPTIONS = nostrip
+
+# Keep cargo's noise inside the build tree.
+export CARGO_HOME = $(CURDIR)/.cargo-home
+
+%:
+	dh $@
+
+override_dh_auto_clean:
+	rm -rf target .cargo-home
+	dh_auto_clean
+
+override_dh_auto_build:
+	cargo build --release --workspace --locked --offline
+
+override_dh_auto_test:
+	# No-op. cargo test would need network for crate metadata.
+
+override_dh_auto_install:
+	install -D -m 755 target/release/clipd \
+	    debian/clipd/usr/bin/clipd
+	install -D -m 755 target/release/clipd-pick \
+	    debian/clipd/usr/bin/clipd-pick
+	install -D -m 644 data/io.github.devtochukwu.Clipd.desktop \
+	    debian/clipd/usr/share/applications/io.github.devtochukwu.Clipd.desktop
+	install -D -m 644 data/icons/hicolor/scalable/apps/io.github.devtochukwu.Clipd.svg \
+	    debian/clipd/usr/share/icons/hicolor/scalable/apps/io.github.devtochukwu.Clipd.svg
+	install -D -m 644 data/clipd.service \
+	    debian/clipd/usr/lib/systemd/user/clipd.service
+	install -D -m 644 extension/clipd@devtochukwu/metadata.json \
+	    debian/clipd/usr/share/gnome-shell/extensions/clipd@devtochukwu/metadata.json
+	install -D -m 644 extension/clipd@devtochukwu/extension.js \
+	    debian/clipd/usr/share/gnome-shell/extensions/clipd@devtochukwu/extension.js

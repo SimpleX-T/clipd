@@ -1,0 +1,7 @@
+clipd (0.2.0-1~noble1) noble; urgency=medium
+
+  * Initial PPA release.
+  * Clipboard manager + emoji picker for GNOME on Wayland.
+  * See /usr/share/doc/clipd/CHANGELOG.md.gz for upstream release notes.
+
+ -- SimpleX-T <ntmark2004@gmail.com>  Tue, 02 Jun 2026 10:00:00 +0100

@@ -23,14 +23,23 @@ and a Unicode 16 emoji catalog.
 
 ### Ubuntu / GNOME (PPA, recommended)
 
-Will land at `ppa:devtochukwu/clipd` once the Launchpad build clears. Once
-available:
-
 ```bash
-sudo add-apt-repository ppa:devtochukwu/clipd
+sudo add-apt-repository ppa:simplex-t/clipd
 sudo apt update
 sudo apt install clipd
 ```
+
+Then, once per user (these can't be done by the package — they're
+session-scoped):
+
+```bash
+systemctl --user enable --now clipd.service
+gnome-extensions enable clipd@devtochukwu
+# Bind a hotkey of your choice to /usr/bin/clipd-pick (Ctrl+Alt+V suggested).
+```
+
+Supported series: **noble** (24.04), **questing** (25.04), **resolute**
+(26.04). Jammy (22.04) ships GTK 4.6 / libadwaita 1.0 — too old.
 
 ### From source
 

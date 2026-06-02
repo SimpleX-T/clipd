@@ -5,6 +5,13 @@ Cargo.lock.bak
 *.swo
 .DS_Store
 
+# Cargo vendoring artefacts — populated by scripts/build-ppa.sh before
+# uploading to Launchpad, but never committed to git. dpkg-source picks
+# them up from the working tree at source-package time.
+/vendor/
+/.cargo/config.toml
+/.cargo-home/
+
 # Local debian build artefacts
 /debian/clipd/
 /debian/.debhelper/
@@ -16,6 +23,7 @@ Cargo.lock.bak
 *.dsc
 *.changes
 *.buildinfo
+*.upload
 *.tar.xz
 *.tar.gz
 

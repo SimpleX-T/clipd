@@ -1,0 +1,43 @@
+Source: clipd
+Section: utils
+Priority: optional
+Maintainer: SimpleX-T <ntmark2004@gmail.com>
+Build-Depends:
+ debhelper-compat (= 13),
+ cargo (>= 1.75),
+ rustc (>= 1.75),
+ pkg-config,
+ libgtk-4-dev (>= 4.14),
+ libadwaita-1-dev (>= 1.5),
+Standards-Version: 4.6.2
+Homepage: https://github.com/simplex-t/clipd
+Vcs-Git: https://github.com/simplex-t/clipd.git
+Vcs-Browser: https://github.com/simplex-t/clipd
+Rules-Requires-Root: no
+
+Package: clipd
+Architecture: any
+Depends:
+ ${shlibs:Depends},
+ ${misc:Depends},
+ wl-clipboard,
+Recommends:
+ ydotool,
+ gnome-shell (>= 46),
+Description: Clipboard manager and emoji picker for GNOME on Wayland
+ clipd is a frosted command palette for clipboard history and emoji search.
+ One hotkey opens a Raycast-style picker; tabs switch between clipboard
+ history and a Unicode 16 emoji catalog (~3,800 entries).
+ .
+ Features:
+  * Clipboard history — text, URLs, hex colors, JSON, code, images
+  * Unicode 16 emoji search with fuzzy name / alias / shortcode ranking
+  * Pin / unpin clips (24-hour TTL on unpinned, pinned clips persist)
+  * Auto-paste via ydotool (Ctrl+V) or super paste (Ctrl+Shift+V)
+  * Per-row context menu: Pin, Paste, Super paste, Delete
+  * GNOME Shell extension for continuous background capture
+ .
+ After installation, three one-time steps:
+  * Start the user daemon:  systemctl --user enable --now clipd.service
+  * Enable the extension:   gnome-extensions enable clipd@devtochukwu
+  * Bind a hotkey to /usr/bin/clipd-pick (Ctrl+Alt+V is the suggested default)

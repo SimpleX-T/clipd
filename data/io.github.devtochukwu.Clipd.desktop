@@ -1,0 +1,18 @@
+[Desktop Entry]
+Type=Application
+Name=clipd
+GenericName=Clipboard & Emoji Picker
+Comment=Search clipboard history and pick emojis
+Icon=io.github.devtochukwu.Clipd
+Exec=clipd-pick
+Terminal=false
+Categories=Utility;
+Keywords=clipboard;emoji;paste;history;search;
+# Tells Wayland compositors (Mutter etc.) that this .desktop entry maps
+# to the GTK app whose application_id is io.github.devtochukwu.Clipd —
+# required for the window to be recognized as a "real" app and not get
+# focus-stealing-prevention bounced around the screen.
+StartupWMClass=io.github.devtochukwu.Clipd
+StartupNotify=true
+# Don't show in the regular app grid — this is a hotkey-only tool.
+NoDisplay=true

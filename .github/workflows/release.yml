@@ -1,0 +1,88 @@
+# .github/workflows/release.yml
+#
+# Triggered on annotated tag pushes (v*.*.*). Builds release binaries,
+# bundles them with the GNOME Shell extension, .desktop, icon, and
+# installer into a single tarball, and attaches the tarball + a
+# sha256 sum to a GitHub Release. Release notes are sliced out of
+# CHANGELOG.md for the matching version.
+
+name: Release
+
+on:
+  push:
+    tags: ['v*.*.*']
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Build and publish ${{ github.ref_name }}
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      # GTK4 / libadwaita headers are needed at build time; rusqlite uses
+      # the `bundled` feature so we don't need libsqlite3-dev.
+      - name: Install system build deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libgtk-4-dev libadwaita-1-dev \
+            pkg-config build-essential
+
+      - name: Cache cargo registry + target
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-
+
+      - name: Build (release)
+        run: cargo build --release --workspace --locked
+
+      - name: Stage release tarball
+        id: stage
+        run: |
+          set -eu
+          VERSION="${GITHUB_REF_NAME#v}"
+          STAGE="clipd-${VERSION}-x86_64-linux-gnu"
+          mkdir -p "$STAGE/bin" "$STAGE/data" "$STAGE/extension" "$STAGE/scripts"
+          install -m 755 target/release/clipd target/release/clipd-pick "$STAGE/bin/"
+          cp -a data/. "$STAGE/data/"
+          cp -a extension/clipd@devtochukwu "$STAGE/extension/"
+          install -m 755 scripts/install.sh "$STAGE/scripts/"
+          install -m 644 README.md LICENSE-MIT LICENSE-APACHE CHANGELOG.md "$STAGE/"
+          tar -cJf "$STAGE.tar.xz" "$STAGE"
+          sha256sum "$STAGE.tar.xz" > "$STAGE.tar.xz.sha256"
+          echo "stage=$STAGE" >> "$GITHUB_OUTPUT"
+
+      # Pull the section for this version out of CHANGELOG.md so the
+      # GitHub Release page shows the right notes. Falls back to a
+      # one-line summary if no matching section exists.
+      - name: Extract release notes
+        run: |
+          set -eu
+          VERSION="${GITHUB_REF_NAME#v}"
+          awk -v v="$VERSION" '
+            $0 ~ "^## \\["v"\\]" { p = 1; next }
+            p && /^## \[/        { exit }
+            p                    { print }
+          ' CHANGELOG.md > release-notes.md
+          if [ ! -s release-notes.md ]; then
+            echo "Release ${VERSION}" > release-notes.md
+          fi
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: clipd ${{ github.ref_name }}
+          body_path: release-notes.md
+          files: |
+            ${{ steps.stage.outputs.stage }}.tar.xz
+            ${{ steps.stage.outputs.stage }}.tar.xz.sha256
+          fail_on_unmatched_files: true

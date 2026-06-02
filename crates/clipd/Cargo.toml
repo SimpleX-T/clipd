@@ -1,0 +1,23 @@
+[package]
+name = "clipd"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[[bin]]
+name = "clipd"
+path = "src/main.rs"
+
+[dependencies]
+clipd-proto = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+bincode = { workspace = true }
+anyhow = { workspace = true }
+thiserror = { workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
+tokio = { workspace = true }
+rusqlite = { workspace = true }
+wl-clipboard-rs = { workspace = true }
+dirs = { workspace = true }

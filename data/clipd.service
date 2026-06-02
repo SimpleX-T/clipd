@@ -1,0 +1,17 @@
+[Unit]
+Description=clipd — clipboard history daemon
+PartOf=graphical-session.target
+After=graphical-session.target
+
+[Service]
+ExecStart=%h/.local/bin/clipd daemon
+Restart=on-failure
+RestartSec=2
+# Memory cap — daemon should sit comfortably under 80 MB.
+MemoryHigh=128M
+MemoryMax=256M
+# Don't leak file handles when the picker UI restarts.
+LimitNOFILE=1024
+
+[Install]
+WantedBy=graphical-session.target

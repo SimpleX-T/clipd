@@ -1,0 +1,199 @@
+/* clipd-pick — palette styles
+ *
+ * Goal: cleaner v0.2 look. Bigger search, segmented tab bar, more
+ * breathing room per row, dim metadata, no kbd-styled footer dummies.
+ */
+
+window.clipd-pick {
+    background: transparent;
+}
+
+.clipd-header {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    min-height: 4px;
+    padding: 0;
+    margin: 0;
+}
+.clipd-header > * {
+    min-height: 0;
+}
+
+.palette {
+    background: alpha(@window_bg_color, 0.92);
+    color: @window_fg_color;
+    border-radius: 20px;
+    box-shadow:
+        0 0 0 1px alpha(@borders, 0.45),
+        0 28px 70px alpha(black, 0.55),
+        0 8px 22px alpha(black, 0.32);
+    padding: 0;
+    min-width: 680px;
+}
+
+/* --- search row -------------------------------------------------- */
+
+.palette .search-row {
+    padding: 16px 20px 10px 20px;
+}
+
+.palette entry.search {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    outline: none;
+    font-size: 20px;
+    color: @window_fg_color;
+    padding: 4px 0;
+    min-height: 32px;
+}
+.palette entry.search:focus {
+    background: transparent;
+    box-shadow: none;
+}
+.palette .search-row > image.search-icon {
+    color: alpha(@window_fg_color, 0.55);
+    margin-right: 12px;
+}
+
+/* --- tab bar ----------------------------------------------------- */
+
+.palette .tab-row {
+    padding: 0 20px 10px 20px;
+}
+.palette .tab-row.linked button.tab {
+    background: alpha(@window_fg_color, 0.06);
+    color: alpha(@window_fg_color, 0.7);
+    border: none;
+    box-shadow: none;
+    padding: 4px 18px;
+    font-size: 13px;
+    min-height: 28px;
+}
+.palette .tab-row.linked button.tab:hover {
+    background: alpha(@window_fg_color, 0.1);
+    color: @window_fg_color;
+}
+.palette .tab-row.linked button.tab:checked {
+    background: alpha(@accent_bg_color, 0.85);
+    color: @accent_fg_color;
+}
+
+/* --- results ----------------------------------------------------- */
+
+.palette .results {
+    background: transparent;
+    padding: 4px 8px 14px 8px;
+}
+.palette .results row {
+    background: transparent;
+    border-radius: 12px;
+    padding: 10px 14px;
+    margin: 1px 6px;
+    transition: background 90ms ease, color 90ms ease;
+}
+.palette .results row:hover {
+    background: alpha(@window_fg_color, 0.05);
+}
+.palette .results row:selected,
+.palette .results row:selected:hover {
+    background: alpha(@accent_bg_color, 0.85);
+    color: @accent_fg_color;
+}
+.palette .results row .kind-icon {
+    color: alpha(@window_fg_color, 0.5);
+    margin-right: 4px;
+}
+.palette .results row:selected .kind-icon {
+    color: @accent_fg_color;
+}
+.palette .results row .preview-text {
+    font-size: 14px;
+}
+.palette .results row .meta {
+    font-size: 11px;
+    color: alpha(@window_fg_color, 0.55);
+}
+.palette .results row:selected .meta {
+    color: alpha(@accent_fg_color, 0.85);
+}
+.palette .results row.emoji-row .emoji-glyph {
+    font-size: 22px;
+    margin-right: 4px;
+}
+.palette .results row .pin-badge {
+    font-size: 13px;
+    margin-left: 8px;
+    opacity: 0.85;
+}
+.palette .results row .clip-thumb {
+    border-radius: 6px;
+    box-shadow: inset 0 0 0 1px alpha(black, 0.18);
+    margin-right: 4px;
+}
+.palette .swatch {
+    border-radius: 4px;
+    min-width: 14px;
+    min-height: 14px;
+    box-shadow: inset 0 0 0 1px alpha(black, 0.22);
+    margin-right: 4px;
+}
+.palette .empty {
+    padding: 48px 18px;
+    color: alpha(@window_fg_color, 0.55);
+    font-size: 13px;
+}
+
+/* --- right-click context menu ------------------------------------- */
+
+popover.clipd-menu > contents {
+    background: alpha(@window_bg_color, 0.96);
+    border: 1px solid alpha(@borders, 0.4);
+    border-radius: 12px;
+    padding: 6px;
+    box-shadow:
+        0 12px 32px alpha(black, 0.45),
+        0 4px 10px alpha(black, 0.25);
+    min-width: 230px;
+}
+
+.clipd-menu button.menu-item {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    border-radius: 7px;
+    padding: 7px 10px;
+    font-size: 13px;
+    color: @window_fg_color;
+    min-height: 0;
+}
+.clipd-menu button.menu-item:hover {
+    background: alpha(@accent_bg_color, 0.18);
+}
+.clipd-menu button.menu-item:active {
+    background: alpha(@accent_bg_color, 0.32);
+}
+.clipd-menu button.menu-item .menu-icon {
+    color: alpha(@window_fg_color, 0.7);
+}
+.clipd-menu button.menu-item .menu-shortcut {
+    color: alpha(@window_fg_color, 0.45);
+    font-size: 11px;
+    margin-left: 16px;
+}
+
+.clipd-menu button.menu-item.destructive {
+    color: @destructive_color;
+}
+.clipd-menu button.menu-item.destructive:hover {
+    background: alpha(@destructive_color, 0.18);
+}
+.clipd-menu button.menu-item.destructive .menu-icon {
+    color: @destructive_color;
+}
+
+.clipd-menu .menu-sep {
+    margin: 4px 6px;
+    opacity: 0.4;
+}

@@ -1,0 +1,24 @@
+/target/
+**/*.rs.bk
+Cargo.lock.bak
+*.swp
+*.swo
+.DS_Store
+
+# Local debian build artefacts
+/debian/clipd/
+/debian/.debhelper/
+/debian/debhelper-build-stamp
+/debian/files
+/debian/*.substvars
+/debian/*.log
+*.deb
+*.dsc
+*.changes
+*.buildinfo
+*.tar.xz
+*.tar.gz
+
+# Editor / IDE
+.vscode/
+.idea/

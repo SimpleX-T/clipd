@@ -24,6 +24,22 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
 
+# Optional: pass KEY=<fingerprint-or-uid> to override the signing key
+# (e.g. when your Launchpad-registered GPG key has a different UID from
+# the changelog's Maintainer line). KEY="" disables signing entirely —
+# useful for local sanity-check builds, but the resulting source package
+# is NOT uploadable to Launchpad.
+SIGN_ARGS=()
+if [ "${KEY+set}" = "set" ]; then
+    if [ -z "${KEY}" ]; then
+        SIGN_ARGS=(-us -uc)
+        echo "==> KEY is empty — building unsigned (local test only)"
+    else
+        SIGN_ARGS=("-k${KEY}")
+        echo "==> signing with key: $KEY"
+    fi
+fi
+
 # 1. Vendor cargo deps (idempotent — cargo skips work if vendor/ is fresh).
 echo "==> cargo vendor (this can take a minute on first run)"
 mkdir -p .cargo
@@ -47,7 +63,7 @@ fi
 SERIES_LIST=("$@")
 if [ "${#SERIES_LIST[@]}" -eq 0 ]; then
     echo "==> dpkg-buildpackage -S (using existing debian/changelog)"
-    dpkg-buildpackage -S -sa -d
+    dpkg-buildpackage -S -sa -d "${SIGN_ARGS[@]}"
     echo
     echo "Built. Upload with:"
     echo "   dput ppa:simplex-t/clipd ../clipd_$(dpkg-parsechangelog -S Version)_source.changes"
@@ -56,24 +72,24 @@ fi
 
 # Multi-series mode: produce one source package per series. We
 # round-trip through dch which writes a fresh changelog entry stamped
-# with the target series.
-UPSTREAM_VERSION="$(dpkg-parsechangelog -S Version | sed 's/-.*//;s/~.*//')"
-DEB_REV="${DEB_REV:-1}"
+# with the target series. Versions are <upstream>~<series>1 with no
+# Debian revision — format 3.0 (native) doesn't allow one.
+UPSTREAM_VERSION="$(dpkg-parsechangelog -S Version | sed 's/~.*//')"
 
 for SERIES in "${SERIES_LIST[@]}"; do
     echo "==> series: $SERIES"
-    VER="${UPSTREAM_VERSION}-${DEB_REV}~${SERIES}1"
+    VER="${UPSTREAM_VERSION}~${SERIES}1"
     # --force-distribution: dch otherwise picks the current host's series.
     DEBEMAIL="ntmark2004@gmail.com" DEBFULLNAME="SimpleX-T" \
         dch --force-distribution --newversion "$VER" --distribution "$SERIES" \
             "Backport for $SERIES."
-    dpkg-buildpackage -S -sa -d
+    dpkg-buildpackage -S -sa -d "${SIGN_ARGS[@]}"
     echo "   built ../clipd_${VER}_source.changes"
 done
 
 echo
 echo "All series built. Upload with:"
 for SERIES in "${SERIES_LIST[@]}"; do
-    VER="${UPSTREAM_VERSION}-${DEB_REV}~${SERIES}1"
+    VER="${UPSTREAM_VERSION}~${SERIES}1"
     echo "   dput ppa:simplex-t/clipd ../clipd_${VER}_source.changes"
 done

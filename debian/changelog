@@ -1,4 +1,4 @@
-clipd (0.2.0-1~noble1) noble; urgency=medium
+clipd (0.2.0~noble1) noble; urgency=medium
 
   * Initial PPA release.
   * Clipboard manager + emoji picker for GNOME on Wayland.

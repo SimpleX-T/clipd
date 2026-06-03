@@ -4,6 +4,6 @@
   "description": "Continuous clipboard capture for the clipd picker. Listens to Mutter's clipboard owner-changed signal and forwards every text / image change to the clipd daemon, so the picker shows your full history even when you didn't open it before copying.",
   "shell-version": ["46", "47", "48", "49", "50"],
   "url": "https://github.com/simplex-t/clipd",
-  "version-name": "0.2.0",
-  "settings-schema": ""
+  "version": 1,
+  "version-name": "0.2.0"
 }

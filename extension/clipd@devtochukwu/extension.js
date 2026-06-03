@@ -19,26 +19,40 @@ import Meta from 'gi://Meta';
 import St from 'gi://St';
 import {Extension} from 'resource:///org/gnome/shell/extensions/extension.js';
 
-const CLIPD_BIN = GLib.build_filenamev([
-    GLib.get_home_dir(),
-    '.local',
-    'bin',
-    'clipd',
-]);
-
 // MIME types we ask St.Clipboard for, in priority order. Text first
 // because it's the common case and reading text auto-decodes it; image
 // second so screenshot copy events are captured too.
 const TEXT_MIME = 'text/plain;charset=utf-8';
 const IMAGE_MIME = 'image/png';
 
+// Resolve the clipd daemon binary. PPA installs land at /usr/bin/clipd;
+// running install.sh from source lands at ~/.local/bin/clipd. We try
+// PATH first (which usually covers both), then fall back to well-known
+// install locations in case the GNOME Shell session was started with a
+// stripped PATH.
+function resolveClipdBin() {
+    const onPath = GLib.find_program_in_path('clipd');
+    if (onPath) return onPath;
+    const candidates = [
+        GLib.build_filenamev([GLib.get_home_dir(), '.local', 'bin', 'clipd']),
+        '/usr/local/bin/clipd',
+        '/usr/bin/clipd',
+    ];
+    for (const p of candidates) {
+        if (GLib.file_test(p, GLib.FileTest.IS_EXECUTABLE)) return p;
+    }
+    return null;
+}
+
 export default class ClipdExtension extends Extension {
     enable() {
-        if (!GLib.file_test(CLIPD_BIN, GLib.FileTest.IS_EXECUTABLE)) {
+        this._clipdBin = resolveClipdBin();
+        if (!this._clipdBin) {
             console.warn(
-                `clipd: ${CLIPD_BIN} not found or not executable — ` +
-                'extension enabled but ingestion will fail silently. ' +
-                'Build and install clipd from ~/clipd/ first.'
+                'clipd: daemon binary not found in PATH or known install ' +
+                'locations. Install via `sudo apt install clipd` (PPA) or ' +
+                'run install.sh from source. The extension is enabled but ' +
+                'ingestion will silently no-op until clipd is installed.'
             );
         }
 
@@ -65,6 +79,7 @@ export default class ClipdExtension extends Extension {
         }
         this._lastTextHash = '';
         this._lastImageHash = '';
+        this._clipdBin = null;
         console.log('clipd: extension disabled');
     }
 
@@ -106,9 +121,16 @@ export default class ClipdExtension extends Extension {
     }
 
     _sendToDaemon(mime, payload) {
+        // Re-resolve in case clipd was installed since enable() ran —
+        // means users don't have to log out / log back in after
+        // `apt install clipd` for the extension to start working.
+        if (!this._clipdBin) {
+            this._clipdBin = resolveClipdBin();
+            if (!this._clipdBin) return;
+        }
         try {
             const proc = Gio.Subprocess.new(
-                [CLIPD_BIN, 'ingest', '--mime', mime],
+                [this._clipdBin, 'ingest', '--mime', mime],
                 Gio.SubprocessFlags.STDIN_PIPE |
                     Gio.SubprocessFlags.STDOUT_SILENCE |
                     Gio.SubprocessFlags.STDERR_SILENCE

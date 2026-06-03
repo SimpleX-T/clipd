@@ -11,7 +11,7 @@
 #                                              # package per series
 #
 # After the build:
-#   dput ppa:simplex-t/clipd ../clipd_<version>~<series>1_source.changes
+#   dput ppa:devtochukwu/clipd ../clipd_<version>~<series>1_source.changes
 #
 # Launchpad builders run sbuild in a network-less chroot. Cargo crates
 # cannot be fetched at build time, so we vendor them into ./vendor/
@@ -66,7 +66,7 @@ if [ "${#SERIES_LIST[@]}" -eq 0 ]; then
     dpkg-buildpackage -S -sa -d "${SIGN_ARGS[@]}"
     echo
     echo "Built. Upload with:"
-    echo "   dput ppa:simplex-t/clipd ../clipd_$(dpkg-parsechangelog -S Version)_source.changes"
+    echo "   dput ppa:devtochukwu/clipd ../clipd_$(dpkg-parsechangelog -S Version)_source.changes"
     exit 0
 fi
 
@@ -91,5 +91,5 @@ echo
 echo "All series built. Upload with:"
 for SERIES in "${SERIES_LIST[@]}"; do
     VER="${UPSTREAM_VERSION}~${SERIES}1"
-    echo "   dput ppa:simplex-t/clipd ../clipd_${VER}_source.changes"
+    echo "   dput ppa:devtochukwu/clipd ../clipd_${VER}_source.changes"
 done

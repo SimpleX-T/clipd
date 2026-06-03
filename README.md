@@ -24,7 +24,7 @@ and a Unicode 16 emoji catalog.
 ### Ubuntu / GNOME (PPA, recommended)
 
 ```bash
-sudo add-apt-repository ppa:simplex-t/clipd
+sudo add-apt-repository ppa:devtochukwu/clipd
 sudo apt update
 sudo apt install clipd
 ```

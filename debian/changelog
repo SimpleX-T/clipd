@@ -1,3 +1,9 @@
+clipd (0.2.0~noble2) noble; urgency=medium
+
+  * Downgrade Cargo.lock to v3 for noble cargo 1.75 compatibility.
+
+ -- SimpleX-T <ntmark2004@gmail.com>  Wed, 03 Jun 2026 12:20:04 +0100
+
 clipd (0.2.0~noble1) noble; urgency=medium
 
   * Initial PPA release.

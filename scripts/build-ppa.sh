@@ -47,6 +47,13 @@ mkdir -p .cargo
 # pipe that into .cargo/config.toml so the Launchpad builder uses it.
 cargo vendor --locked > .cargo/config.toml
 
+# 1a. Force Cargo.lock to v3 format. Local dev runs cargo >= 1.78 which
+# writes v4 lockfiles, but Ubuntu noble (24.04) ships cargo 1.75 which
+# only reads v3 (error: "lock file version 4 requires
+# -Znext-lockfile-bump"). The version delta is just an encoding bump —
+# no semantic difference for our dep graph — so the sed is safe.
+sed -i 's/^version = 4$/version = 3/' Cargo.lock
+
 # 2. Sanity-check that debian/ is in shape.
 if ! command -v dpkg-buildpackage >/dev/null; then
     echo "error: dpkg-buildpackage not installed. apt install devscripts dpkg-dev"

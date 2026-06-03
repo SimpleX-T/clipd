@@ -1,6 +1,16 @@
 # Exclude build artefacts from the source tarball. vendor/ and
 # .cargo/config.toml are INCLUDED — they're needed for the network-less
 # Launchpad build.
+#
+# NB: tar-ignore patterns are unanchored — they match ANY directory by
+# that name anywhere in the tree. We deliberately do NOT exclude
+# ".github" here: many vendored Rust crates (anyhow, libc, regex, …)
+# ship .github/workflows/ directories that cargo's checksum verification
+# expects to find. Excluding them would silently strip those files from
+# the tarball and break `cargo build --offline` on Launchpad with
+# `failed to calculate checksum of vendor/<crate>/.github/...`.
+# The top-level .github/workflows/release.yml ends up in the source
+# tarball as a result — harmless, dpkg-buildpackage ignores it.
 
 tar-ignore = "target"
 tar-ignore = ".cargo-home"
@@ -11,4 +21,3 @@ tar-ignore = "debian/*.substvars"
 tar-ignore = "debian/*.log"
 tar-ignore = "debian/debhelper-build-stamp"
 tar-ignore = ".git"
-tar-ignore = ".github"

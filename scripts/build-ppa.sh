@@ -94,8 +94,16 @@ vendor_and_build() {
 
     # Swap in per-series lockfile if one exists. questing pulls from
     # debian/lockfiles/; resolute uses the canonical ./Cargo.lock.
+    # We back up the canonical to a temp file (NOT to git) so the
+    # restore at the end works regardless of whether the working tree
+    # was already in sync with HEAD. The prior approach used
+    # `git checkout -- Cargo.lock` and silently reverted local clean-ups
+    # that hadn't been committed yet.
     local series_lock="debian/lockfiles/${series}.lock"
+    local canonical_backup=""
     if [ -f "$series_lock" ]; then
+        canonical_backup=$(mktemp --suffix=.Cargo.lock)
+        cp Cargo.lock "$canonical_backup"
         echo "   using per-series lockfile: $series_lock"
         cp "$series_lock" Cargo.lock
     fi
@@ -115,11 +123,10 @@ vendor_and_build() {
     echo "   dpkg-buildpackage -S for ${ver}"
     dpkg-buildpackage -S -sa -d "${SIGN_ARGS[@]}"
 
-    # Restore canonical Cargo.lock so the next series build starts
-    # clean and the working tree isn't dirtied with a per-series lock.
-    if [ -f "$series_lock" ]; then
-        git checkout -- Cargo.lock 2>/dev/null \
-            || cp "$series_lock" /dev/null  # tolerate no-git case
+    # Restore the canonical Cargo.lock we stashed at the top of this
+    # function, so the next series build starts from a known state.
+    if [ -n "$canonical_backup" ]; then
+        mv "$canonical_backup" Cargo.lock
     fi
 
     echo "   built ../clipd_${ver}_source.changes"

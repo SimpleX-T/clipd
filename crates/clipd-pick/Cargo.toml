@@ -19,6 +19,4 @@ gtk = { workspace = true }
 adw = { workspace = true }
 glib = { workspace = true }
 gio = { workspace = true }
-ureq = { workspace = true }
-dirs = { workspace = true }
 emojis = { workspace = true }

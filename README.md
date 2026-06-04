@@ -38,8 +38,14 @@ gnome-extensions enable clipd@devtochukwu
 # Bind a hotkey of your choice to /usr/bin/clipd-pick (Ctrl+Alt+V suggested).
 ```
 
-Supported series: **noble** (24.04), **questing** (25.04), **resolute**
-(26.04). Jammy (22.04) ships GTK 4.6 / libadwaita 1.0 — too old.
+Supported series: **questing** (25.04), **resolute** (26.04).
+
+**Noble** (24.04 LTS) is not in the PPA. Noble's cargo is 1.75, which
+predates Cargo features now used by the crates.io registry itself — so
+even a fully-pinned dep tree fails to parse on noble. Noble users can
+install from source after `rustup toolchain install stable`; see the
+"From source" section. Jammy (22.04) is out for a different reason —
+GTK 4.6 / libadwaita 1.0 are too old.
 
 ### From source
 

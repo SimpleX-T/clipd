@@ -84,8 +84,16 @@ next_counter() {
 vendor_and_build() {
     local ver=$1 series=$2
 
-    # Swap in per-series lockfile if one exists. resolute uses canonical
-    # Cargo.lock; noble + questing pull from debian/lockfiles/.
+    # Clear any stale .cargo/config.toml left over from a previous
+    # series. The vendor stanza in there points cargo at vendor/, which
+    # was populated for that other series's deps — if we leave it in
+    # place, this run's `cargo vendor --locked` tries to find versions
+    # that aren't in vendor/ and fails with "lockfile needs to be
+    # updated". cargo vendor will rewrite this file on the next line.
+    rm -f .cargo/config.toml
+
+    # Swap in per-series lockfile if one exists. questing pulls from
+    # debian/lockfiles/; resolute uses the canonical ./Cargo.lock.
     local series_lock="debian/lockfiles/${series}.lock"
     if [ -f "$series_lock" ]; then
         echo "   using per-series lockfile: $series_lock"

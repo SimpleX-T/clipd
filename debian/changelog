@@ -1,3 +1,11 @@
+clipd (0.2.0~resolute3) resolute; urgency=medium
+
+  * Re-spin after dropping the unused ureq workspace dep. No
+    user-facing change for resolute (canonical lockfile, latest
+    deps); the smaller dep graph just builds slightly faster.
+
+ -- SimpleX-T <ntmark2004@gmail.com>  Thu, 04 Jun 2026 09:58:24 +0100
+
 clipd (0.2.0~questing2) questing; urgency=medium
 
   * Drop unused ureq workspace dep (kills url/idna/icu_* chain that
